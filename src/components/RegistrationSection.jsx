@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AnimatedButton from "./AnimatedButton";
 
 export const RegistrationSection = () => {
   const [isOpen, setIsOpen] = useState(false); // Estado para controlar la visibilidad del popup
@@ -69,12 +70,7 @@ export const RegistrationSection = () => {
       <p className="mt-4 text-lg text-gray-300">
         Completa el formulario para procesar tu solicitud, en unos días se estarán comunicando con vos.
       </p>
-      <button
-        className="mt-6 bg-green-500 hover:bg-green-400 text-white px-6 py-3 rounded-full font-semibold transform transition duration-300 ease-in-out hover:scale-105 shadow-lg hover:shadow-xl animate-bounce-ball"
-        onClick={openPopup}
-      >
-        Registrarme
-      </button>
+      <AnimatedButton onClick={openPopup}>Registrarme</AnimatedButton>
 
       {/* Popup del formulario */}
       {isOpen && (
@@ -140,12 +136,16 @@ export const RegistrationSection = () => {
               </div>
 
               <div className="flex justify-between items-center">
-                <button type="button" onClick={closePopup} className="bg-gray-500 text-white px-6 py-3 rounded-full">
+                <button
+                  type="button"
+                  onClick={closePopup}
+                  className="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white px-6 py-3 rounded-full hover:scale-105"
+                >
                   Cerrar
                 </button>
                 <button
                   type="submit"
-                  className="bg-green-500 hover:bg-green-400 text-white px-6 py-3 rounded-full font-semibold transform transition duration-300 ease-in-out hover:scale-105 shadow-lg hover:shadow-xl"
+                  className="cursor-pointer bg-green-500 hover:bg-green-400 text-white px-6 py-3 rounded-full font-semibold transform transition duration-300 ease-in-out hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   Enviar
                 </button>
