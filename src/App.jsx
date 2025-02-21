@@ -3,6 +3,7 @@ import { AboutSection } from "./components/AboutSection";
 import { ScheduleSection } from "./components/ScheduleSection";
 import { RegistrationSection } from "./components/RegistrationSection";
 import { Footer } from "./components/Footer";
+import { TestimonialsSection } from "./components/TestimonialsSection";
 
 const PadelTournamentLanding = () => {
   return (
@@ -10,6 +11,7 @@ const PadelTournamentLanding = () => {
       <HeroSection />
       <AboutSection />
       <ScheduleSection />
+      <TestimonialsSection />
       <RegistrationSection />
       <Footer />
     </div>
