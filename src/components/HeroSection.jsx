@@ -1,7 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AnimatedButton from "./AnimatedButton";
 
 export const HeroSection = () => {
+  const [timeLeft, setTimeLeft] = useState({});
+
+  const calculateTimeLeft = () => {
+    const targetDate = new Date("2025-04-01T00:00:00"); // Fecha objetivo
+    const now = new Date();
+    const difference = targetDate - now;
+
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+
+    return timeLeft;
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const handleScroll = () => {
     const nextSection = document.getElementById("about-section");
     if (nextSection) {
@@ -28,6 +57,32 @@ export const HeroSection = () => {
         <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-400 via-red-500 to-blue-500 bg-clip-text text-transparent animate-color-shift">
           Bienvenido a Padel Tour
         </h1>
+
+        {/* Cuenta regresiva */}
+        <div className="mt-6 text-2xl">
+          {timeLeft.days !== undefined ? (
+            <div className="flex justify-center space-x-4">
+              <div className=" p-4 rounded-lg shadow-lg">
+                <span className="block text-4xl font-bold text-gray-800">{timeLeft.days}</span>
+                <span className="block text-sm text-gray-800">Días</span>
+              </div>
+              <div className=" p-4 rounded-lg shadow-lg">
+                <span className="block text-4xl font-bold text-gray-800">{timeLeft.hours}</span>
+                <span className=" text block text-sm text-gray-800">Horas</span>
+              </div>
+              <div className=" p-4 rounded-lg shadow-lg">
+                <span className="block text-4xl font-bold text-gray-800">{timeLeft.minutes}</span>
+                <span className="block text-sm text-gray-800">Minutos</span>
+              </div>
+              <div className=" p-4 rounded-lg shadow-lg">
+                <span className="block text-4xl font-bold text-gray-800">{timeLeft.seconds}</span>
+                <span className="block text-sm text-gray-800 ">Segundos</span>
+              </div>
+            </div>
+          ) : (
+            <span>¡El evento ha comenzado!</span>
+          )}
+        </div>
 
         {/* Botón con animación inspirada en una pelota de pádel */}
         <AnimatedButton onClick={handleScroll}>Conoce más</AnimatedButton>
