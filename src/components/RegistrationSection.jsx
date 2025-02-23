@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import process from "process";
 import AnimatedButton from "./AnimatedButton";
 
 export const RegistrationSection = () => {
@@ -41,10 +42,9 @@ export const RegistrationSection = () => {
   };
 
   // Función para manejar el submit del formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones
     const newErrors = {};
     if (!formData.teamName) newErrors.teamName = "El nombre del equipo es obligatorio.";
     if (!formData.phone) newErrors.phone = "El teléfono es obligatorio.";
@@ -55,12 +55,32 @@ export const RegistrationSection = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log("Formulario enviado", formData);
-      setShowSuccess(true); // Muestra el mensaje de éxito
-      setTimeout(() => {
-        setShowSuccess(false); // Oculta el mensaje después de 2 segundos
-        closePopup(); // Cierra el popup
-      }, 2000);
+      // Agregar el user agent y la fecha de envío
+      const extendedFormData = {
+        ...formData,
+        userAgent: navigator.userAgent, // Obtener el user agent del navegador
+        submissionDate: new Date().toLocaleString(), // Obtener la fecha de envío
+      };
+
+      try {
+        // Usar la variable de entorno con el prefijo VITE_
+        await fetch(
+          import.meta.env.VITE_SCRIPT_URL, // Accediendo a la variable de entorno en Vite
+          {
+            method: "POST",
+            body: JSON.stringify(extendedFormData),
+            headers: { "Content-Type": "application/json" },
+            mode: "no-cors", // Aquí activamos no-cors
+          }
+        );
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+          closePopup();
+        }, 2000);
+      } catch (error) {
+        console.error("Error al enviar el formulario:", error);
+      }
     }
   };
 
