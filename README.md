@@ -37,11 +37,9 @@ function doPost(e) {
 3. Guarda el script y publícalo como una aplicación web.
 4. Copia la URL generada y pégala en el archivo `.env` en la variable `REACT_APP_GOOGLE_SHEETS_URL`.
 
-### 2. Clonar el repositorio y correr el proyecto
+### 2. Instala dependenciadas y ejecuta la aplicación
 
 ```bash
-git clone https://github.com/manuelKrivoy/padeltour
-cd padeltour
 npm install
 npm run dev
 ```
