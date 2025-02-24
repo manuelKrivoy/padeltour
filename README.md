@@ -15,12 +15,13 @@ function doPost(e) {
   const data = JSON.parse(e.postData.contents);
 
   sheet.appendRow([
-    data.teamName,
+    data.equipo,
     data.participant1,
     data.participant2,
-    data.phone,
+    data.telefono,
     data.email,
     new Date().toLocaleString(),
+    data.userAgent,
   ]);
 
   return ContentService.createTextOutput(JSON.stringify({ status: "success" }))

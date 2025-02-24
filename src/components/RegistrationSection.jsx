@@ -1,86 +1,61 @@
 import React, { useState } from "react";
-import process from "process";
 import AnimatedButton from "./AnimatedButton";
 
 export const RegistrationSection = () => {
-  const [isOpen, setIsOpen] = useState(false); // Estado para controlar la visibilidad del popup
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
-    teamName: "",
-    phone: "",
+    equipo: "",
+    telefono: "",
     email: "",
     participant1: "",
     participant2: "",
   });
-  const [errors, setErrors] = useState({
-    teamName: "",
-    phone: "",
-    email: "",
-    participant1: "",
-    participant2: "",
-  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
-  // Estado para manejar el envío correcto
-  const [showSuccess, setShowSuccess] = useState(false);
+  const openPopup = () => setIsOpen(true);
+  const closePopup = () => setIsOpen(false);
 
-  // Función para abrir el popup
-  const openPopup = () => {
-    setIsOpen(true);
-  };
-
-  // Función para cerrar el popup
-  const closePopup = () => {
-    setIsOpen(false);
-  };
-
-  // Función para manejar el cambio en los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
-  // Función para manejar el submit del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setErrors({});
 
     const newErrors = {};
-    if (!formData.teamName) newErrors.teamName = "El nombre del equipo es obligatorio.";
-    if (!formData.phone) newErrors.phone = "El teléfono es obligatorio.";
+    if (!formData.equipo) newErrors.equipo = "El nombre del equipo es obligatorio.";
+    if (!formData.telefono) newErrors.telefono = "El teléfono es obligatorio.";
     if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "El correo electrónico es inválido.";
     if (!formData.participant1 || !formData.participant2)
       newErrors.participants = "Los nombres de los participantes son obligatorios.";
 
-    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsSubmitting(false);
+      return;
+    }
 
-    if (Object.keys(newErrors).length === 0) {
-      // Agregar el user agent y la fecha de envío
-      const extendedFormData = {
-        ...formData,
-        userAgent: navigator.userAgent, // Obtener el user agent del navegador
-        submissionDate: new Date().toLocaleString(), // Obtener la fecha de envío
-      };
-
-      try {
-        // Usar la variable de entorno con el prefijo VITE_
-        await fetch(
-          import.meta.env.VITE_SCRIPT_URL, // Accediendo a la variable de entorno en Vite
-          {
-            method: "POST",
-            body: JSON.stringify(extendedFormData),
-            headers: { "Content-Type": "application/json" },
-            mode: "no-cors", // Aquí activamos no-cors
-          }
-        );
-        setShowSuccess(true);
-        setTimeout(() => {
-          setShowSuccess(false);
-          closePopup();
-        }, 2000);
-      } catch (error) {
-        console.error("Error al enviar el formulario:", error);
-      }
+    try {
+      await fetch(import.meta.env.VITE_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          ...formData,
+          userAgent: navigator.userAgent,
+          submissionDate: new Date().toLocaleString(),
+        }),
+        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+      });
+      setFormSubmitted(true);
+    } catch (error) {
+      console.error("Error al enviar el formulario:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -92,87 +67,57 @@ export const RegistrationSection = () => {
       </p>
       <AnimatedButton onClick={openPopup}>Registrarme</AnimatedButton>
 
-      {/* Popup del formulario */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 text-white p-8 rounded-xl shadow-lg w-96">
             <h3 className="text-2xl font-bold mb-4 text-yellow-500">Formulario de inscripción</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-gray-300">Nombre del equipo</label>
-                <input
-                  type="text"
-                  name="teamName"
-                  value={formData.teamName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-600 rounded-lg text-black"
-                />
-                {errors.teamName && <p className="text-red-500 text-sm">{errors.teamName}</p>}
+            {isSubmitting ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="w-10 h-10 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
-              <div>
-                <label className="block text-gray-300">Nombre del primer participante</label>
-                <input
-                  type="text"
-                  name="participant1"
-                  value={formData.participant1}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-600 rounded-lg text-black"
-                />
-                {errors.participants && <p className="text-red-500 text-sm">{errors.participants}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-300">Nombre del segundo participante</label>
-                <input
-                  type="text"
-                  name="participant2"
-                  value={formData.participant2}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-600 rounded-lg text-black"
-                />
-                {errors.participants && <p className="text-red-500 text-sm">{errors.participants}</p>}
-              </div>
-
-              <div>
-                <label className="block text-gray-300">Teléfono</label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-600 rounded-lg text-black"
-                />
-                {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
-              </div>
-              <div>
-                <label className="block text-gray-300">Correo electrónico</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-600 rounded-lg text-black"
-                />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-              </div>
-
-              <div className="flex justify-between items-center">
+            ) : formSubmitted ? (
+              <div className="text-center">
+                <p className="text-green-500 font-semibold mb-4">¡Formulario enviado correctamente!</p>
                 <button
-                  type="button"
                   onClick={closePopup}
-                  className="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white px-6 py-3 rounded-full hover:scale-105"
+                  className="bg-gray-500 hover:bg-gray-700 text-white px-6 py-3 rounded-full hover:scale-105"
                 >
                   Cerrar
                 </button>
-                <button
-                  type="submit"
-                  className="cursor-pointer bg-green-500 hover:bg-green-400 text-white px-6 py-3 rounded-full font-semibold transform transition duration-300 ease-in-out hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  Enviar
-                </button>
               </div>
-            </form>
-            {showSuccess && (
-              <div className="mt-4 text-center text-green-500 font-semibold">¡Formulario enviado correctamente!</div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {Object.entries(formData).map(([key, value]) => (
+                  <div key={key}>
+                    <label className="block text-gray-300 capitalize">
+                      {key.replace("participant", "Participante ")}
+                    </label>
+                    <input
+                      type="text"
+                      name={key}
+                      value={value}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-600 rounded-lg text-black"
+                    />
+                    {errors[key] && <p className="text-red-500 text-sm">{errors[key]}</p>}
+                  </div>
+                ))}
+                <div className="flex justify-between items-center">
+                  <button
+                    type="button"
+                    onClick={closePopup}
+                    className="bg-gray-500 hover:bg-gray-700 text-white px-6 py-3 rounded-full hover:scale-105"
+                  >
+                    Cerrar
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-green-500 hover:bg-green-400 text-white px-6 py-3 rounded-full font-semibold hover:scale-105"
+                  >
+                    Enviar
+                  </button>
+                </div>
+              </form>
             )}
           </div>
         </div>
