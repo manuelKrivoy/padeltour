@@ -97,7 +97,7 @@ export const RegistrationSection = () => {
                       name={key}
                       value={value}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-600 rounded-lg text-black"
+                      className="w-full px-4 py-2 border border-gray-600 rounded-lg text-white"
                     />
                     {errors[key] && <p className="text-red-500 text-sm">{errors[key]}</p>}
                   </div>
